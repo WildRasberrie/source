@@ -12,6 +12,7 @@ local timer <const> = playdate.timer
 
 --Variables
 local playerSprite=nil
+local playerSpriteL=nil
 
 local playerSpeed =4
 
@@ -20,6 +21,7 @@ local playTime= 30*1000 --30 seconds
 
 local coinSprite=nil
 local score=0
+local highScore=0
 
 --Set Timer
 local function resetTimer()
@@ -33,14 +35,27 @@ local function moveCoin()
     coinSprite:moveTo(randX,randY)
 end
 
+--Save High Score 
+local function saveScore()
+
+    
+end
+
 local function initialize ()
     math.randomseed(playdate.getSecondsSinceEpoch())
 --Import player avatar 
+    local playerStartX=200
+    local playerStartY=120
     local playerImage=gfx.image.new("images/player")
+    local playerImageL=gfx.image.new("images/player2")
     playerSprite=gfx.sprite.new(playerImage)
-    playerSprite:moveTo(200,120)
-    playerSprite:setCollideRect(0,0,coinSprite:getSize())
+    playerSpriteL=gfx.sprite.new(playerImageL)
+    playerSprite:setCollideRect(0,0,40,40)
+    playerSpriteL:setCollideRect(0,0,40,40)
+    playerSprite:moveTo(playerStartX,playerStartY)
+    playerSpriteL:moveto(playerStartx,playerStartY)
     playerSprite:add()
+    playerSpriteL:add()
 --Import background
     --local backgroundImage=gfx.image.new("images/background")
     --setBackgroundDrawingCallback does the following:
@@ -54,9 +69,11 @@ local function initialize ()
     -- end
    -- }
 
+
    --Import Coin Sprite
    local coinImage = gfx.image.new("images/coin")
    coinSprite = gfx.sprite.new(coinImage)
+   coinSprite:setCollideRect(0,0,10,10)
    moveCoin()
    coinSprite:add()
 
@@ -90,7 +107,7 @@ function playdate.update()
         end
         if playdate.buttonIsPressed(playdate.kButtonLeft)
         then
-            playerSprite:moveBy(-playerSpeed,0)
+            playerSpriteL:moveBy(-playerSpeed,0)
         end
         if playdate.buttonIsPressed(playdate.kButtonRight)
         then
@@ -98,11 +115,11 @@ function playdate.update()
         end  
 
     --set coin collection
-        local collisions=coinSprite:overlappingSprites()
-        if #collisions>=1 
+        local collisions = playerSprite:overlappingSprites()||playerSpriteL:overlappingSprites()
+        if #collisions >= 1
         then
             moveCoin()
-            score = score + 1
+            score+=1
         end
     end
     
@@ -120,6 +137,6 @@ function playdate.update()
     --Instructions for Player
     if playTimer.value==0
     then
-        gfx.drawText("Press A to restart",15,5)
+        gfx.drawText("Press A to restart",15,200)
     end
 end
