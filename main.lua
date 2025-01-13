@@ -6,8 +6,12 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
+import "sprites"
+import "assets"
+
 --Constants
 local gfx <const> = playdate.graphics
+local sprite <const> = gfx.sprite
 local timer <const> = playdate.timer
 
 --Variables
@@ -50,12 +54,11 @@ local function initialize ()
     local playerImageL=gfx.image.new("images/player2")
     playerSprite=gfx.sprite.new(playerImage)
     playerSpriteL=gfx.sprite.new(playerImageL)
-    playerSprite:setCollideRect(0,0,40,40)
-    playerSpriteL:setCollideRect(0,0,40,40)
+    playerSprite:setCollideRect(0,0,25,40)
+    playerSpriteL:setCollideRect(0,0,25,40)
     playerSprite:moveTo(playerStartX,playerStartY)
-    playerSpriteL:moveto(playerStartx,playerStartY)
     playerSprite:add()
-    playerSpriteL:add()
+
 --Import background
     --local backgroundImage=gfx.image.new("images/background")
     --setBackgroundDrawingCallback does the following:
@@ -76,6 +79,11 @@ local function initialize ()
    coinSprite:setCollideRect(0,0,10,10)
    moveCoin()
    coinSprite:add()
+
+--TEST add enemy to game
+    local enemy=Enemy()
+    enemy:moveTo(300,120)
+    enemy:add()
 
    --Reset Timer
    resetTimer()
@@ -107,7 +115,7 @@ function playdate.update()
         end
         if playdate.buttonIsPressed(playdate.kButtonLeft)
         then
-            playerSpriteL:moveBy(-playerSpeed,0)
+            playerSprite:moveBy(-playerSpeed,0)
         end
         if playdate.buttonIsPressed(playdate.kButtonRight)
         then
@@ -115,7 +123,7 @@ function playdate.update()
         end  
 
     --set coin collection
-        local collisions = playerSprite:overlappingSprites()||playerSpriteL:overlappingSprites()
+        local collisions = playerSprite:overlappingSprites() or playerSpriteL:overlappingSprites()
         if #collisions >= 1
         then
             moveCoin()
