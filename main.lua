@@ -45,85 +45,65 @@ local function saveScore()
     
 end
 
-local function initialize ()
+local function setup ()
     math.randomseed(playdate.getSecondsSinceEpoch())
 --Import player avatar 
-    local playerStartX=200
-    local playerStartY=120
-    local playerImage=gfx.image.new("images/player")
-    local playerImageL=gfx.image.new("images/player2")
-    playerSprite=gfx.sprite.new(playerImage)
-    playerSpriteL=gfx.sprite.new(playerImageL)
-    playerSprite:setCollideRect(0,0,25,40)
-    playerSpriteL:setCollideRect(0,0,25,40)
-    playerSprite:moveTo(playerStartX,playerStartY)
-    playerSprite:add()
+    local playerImage=gfx.image.new(assets.player)
+    local playerInstance = Player(200,120,playerImage)
+    playerInstance:setCollideRect(0,0,25,40)--
+    playerInstance:add()
 
 --Import background
-    --local backgroundImage=gfx.image.new("images/background")
-    --setBackgroundDrawingCallback does the following:
+    local backgroundImage=gfx.image.new("images/background")
+    assert(backgroundImage)
+    
+    --setBackgroundDrawingCallback() does the following:
     --Creates Screen-Sized sprite(400x240)
     --Adds to draw list 
-    --gfx.sprite.setBackgroundDrawingCallback{
-    --    function(x,y,width,height)
-    --        gfx.setClipRect(x,y,width,height)
-    --        backgroundImage:draw(0,0)
-    --        gfx.clearClipRect()
-    -- end
-   -- }
+    gfx.sprite.setBackgroundDrawingCallback(
+        function(x,y,width,height)
+            gfx.setClipRect(x,y,width,height)
+            backgroundImage:draw(0,0)
+            gfx.clearClipRect()
+     end
+    )
 
 
    --Import Coin Sprite
-   local coinImage = gfx.image.new("images/coin")
+   local coinImage = gfx.image.new(assets.coin)
    coinSprite = gfx.sprite.new(coinImage)
    coinSprite:setCollideRect(0,0,10,10)
    moveCoin()
    coinSprite:add()
 
 --TEST add enemy to game
-    local enemy=Enemy()
-    enemy:moveTo(300,120)
-    enemy:add()
+--    local enemy=Enemy()
+--    local enemyStartX = 200
+--    local enemyStartY = 120
+--    enemy:moveTo(enemyStartX,enemyStartY)
+--    enemy:add()
 
    --Reset Timer
    resetTimer()
 end
 
 
-initialize()
+setup()
 
 function playdate.update()
-    --Stop Player movement if timer = 0
-    if playTimer.value == 0
-    then
-        if playdate.buttonJustPressed(playdate.kButtonA)
+        --Stop Player movement if timer = 0
+        if playTimer.value == 0
         then
-            resetTimer()
-            moveCoin()
-            score=0
-        end
-    else
---Set Button Controls
-
-        if playdate.buttonIsPressed(playdate.kButtonUp)
-        then
-            playerSprite:moveBy(0,-playerSpeed)
-        end
-        if playdate.buttonIsPressed(playdate.kButtonDown)
-        then
-            playerSprite:moveBy(0,playerSpeed)
-        end
-        if playdate.buttonIsPressed(playdate.kButtonLeft)
-        then
-            playerSprite:moveBy(-playerSpeed,0)
-        end
-        if playdate.buttonIsPressed(playdate.kButtonRight)
-        then
-            playerSprite:moveBy(playerSpeed,0)
-        end  
+            if playdate.buttonJustPressed(playdate.kButtonA)
+            then
+                resetTimer()
+                moveCoin()
+                score=0
+            end
+        
 
     --set coin collection
-        local collisions = playerSprite:overlappingSprites() or playerSpriteL:overlappingSprites()
+        local collisions = playerInstance:overlappingSprites()
         if #collisions >= 1
         then
             moveCoin()
@@ -133,6 +113,7 @@ function playdate.update()
     
     --update Sprite
     gfx.sprite.update()
+
     --update timers
     playdate.timer.updateTimers()
 

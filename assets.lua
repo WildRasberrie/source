@@ -1,4 +1,5 @@
 assets = {
-    bullet="images/bullet",
-    enemy="images/enemy"
+    enemy="images/enemy",
+    coin = "images/coin",
+    player = "images/player"
 }
